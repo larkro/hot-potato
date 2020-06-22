@@ -19,8 +19,24 @@ describe HotPotato do
     post "/addPotato", 'junk="testing"'
     expect(last_response).not_to be_ok
   end
-  it "should allow POST access to /addPotato with form field potato" do
-    post "/addPotato", 'potato="string to be encrypted"'
+  it "should not allow POST access to /addPotato with bad form" do
+    post "/addPotato", {
+      junk: "testing"
+    }
+    expect(last_response).not_to be_ok
+  end
+  it "should not allow POST access to /addPotato with potato only" do
+    post "/addPotato", {
+      potato: "testing"
+    }
+    expect(last_response).not_to be_ok
+  end
+  it "should allow POST access to /addPotato with form field potato and secret" do
+    post "/addPotato", {
+      potato: "string to be encrypted",
+      secret: "adsasd"
+    }
+    # post "/addPotato", {'potato="string to be encrypted"', 'secret="adsasd"'}
     expect(last_response).to be_ok
   end
   it "should allow kubernetes healthcheck" do

@@ -1,6 +1,8 @@
 require "sinatra/base"
 require "sinatra/param"
 require "openssl"
+require "securerandom"
+require "digest/sha2"
 
 class HotPotato < Sinatra::Base
   helpers Sinatra::Param
@@ -10,17 +12,47 @@ class HotPotato < Sinatra::Base
     # set :port, 443 # Uncomment if handling TLS
   end
 
+  def genRandom
+    SecureRandom.alphanumeric(10)
+  end
+
+  def encryptPotato(secret, potato)
+    alg = "AES-256-CBC"
+    iv = OpenSSL::Cipher.new(alg).random_iv
+
+    digest = Digest::SHA256.new
+    digest.update(secret)
+    key = digest.digest
+
+    aes = OpenSSL::Cipher.new(alg)
+    aes.encrypt
+    aes.key = key
+    aes.iv = iv
+
+    cipher = aes.update(potato)
+    cipher << aes.final
+  end
+
   get "/" do
     @title = "Add HotPotato"
+    @my_secret = genRandom
     erb :index
   end
 
   post "/addPotato" do
-    param :potato, String, required: true
-    one_of :potato
     @title = "Potato added"
-    @potato = params["potato"]
-    erb :potato
+    param :potato, String, required: true
+    param :secret, String, required: true
+    one_of :potato, raise: true
+    one_of :secret, raise: true
+    if params["potato"] == "" || params["secret"] == ""
+      redirect to("/")
+    else
+      @potato = params["potato"]
+      @secret = params["secret"]
+      @cipher = encryptPotato(@secret, @potato)
+      erb :potato
+    end
   end
 
   get "/get/:potato" do

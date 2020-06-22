@@ -1,4 +1,6 @@
 <form action="addPotato" method="post">
     <textarea class="form-control" rows="10" name="potato" placeholder="paste your hot potato"></textarea>
+    <label for="secret">Encryption key:</label>
+    <input type="text" name="secret" value="<%= @my_secret %>">
     <button type="submit" class="btn btn-primary">Send the potato</button>
 </form>
