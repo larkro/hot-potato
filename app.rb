@@ -72,7 +72,7 @@ class HotPotato < Sinatra::Base
   end
 
   get "/" do
-    @ttl = { "1 day" => 86400, "3 days" => 259200, "7 days" => 604800 }
+    @ttl = { "1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800 }
     @default_ttl = "3 days"
     @title = "Add HotPotato"
     @my_secret = genRandom
