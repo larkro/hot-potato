@@ -3,6 +3,43 @@ require "sinatra/param"
 require "openssl"
 require "securerandom"
 require "digest/sha2"
+require "base64"
+
+class PotatoCollection
+  include Enumerable
+
+  attr_accessor :potatoes
+
+  def initialize
+    @@potatoes = {}
+  end
+
+  def add potato
+    id = generateId
+    # @potatoes.merge!({ generateId => { msg: "msg-1", secret: "secret-1" }})
+    @@potatoes.merge!({id => potato})
+  end
+
+  def self.getPotato id
+    @@potatoes.to_h[id]
+  end
+
+  def generateId
+    loop do
+      # token = SecureRandom.hex(5)
+      token = SecureRandom.urlsafe_base64(5)
+      break token unless @@potatoes.include?(token)
+    end
+  end
+
+  def self.all
+    @@potatoes
+  end
+
+  def each
+    @@potatoes.each { |potato| yield potato }
+  end
+end
 
 class HotPotato < Sinatra::Base
   helpers Sinatra::Param
@@ -10,6 +47,7 @@ class HotPotato < Sinatra::Base
   configure do
     set :bind, "0.0.0.0" # Default dev env is localhost only, works bad with containers.
     # set :port, 443 # Uncomment if handling TLS
+    @@potatoes = PotatoCollection.new
   end
 
   def genRandom
@@ -39,6 +77,18 @@ class HotPotato < Sinatra::Base
     erb :index
   end
 
+  get "/test/" do
+    msg = genRandom
+    secret = genRandom
+    @@potatoes.add("{msg: \"msg-#{msg}\", secret: \"secret-#{secret}\"}")
+    erb '<a href="/test/"> do it again!</a>'
+    # redirect to("/")
+  end
+
+  get "/list/" do
+    PotatoCollection.all.to_s
+  end
+
   post "/addPotato" do
     @title = "Potato added"
     param :potato, String, required: true
@@ -48,15 +98,18 @@ class HotPotato < Sinatra::Base
     if params["potato"] == "" || params["secret"] == ""
       redirect to("/")
     else
-      @potato = params["potato"]
+      @potato = Base64.encode64(params["potato"])
       @secret = params["secret"]
       @cipher = encryptPotato(@secret, @potato)
       erb :potato
     end
   end
 
+  # "Hello #{params[:potato]}"
+  # @@potatoes.getPotato("{params[:potato]").to_s
   get "/get/:potato" do
-    "Hello #{params[:potato]}"
+    @potato = params["potato"]
+    PotatoCollection.getPotato(@potato).to_s
   end
 
   # Kubernetes healthcheck

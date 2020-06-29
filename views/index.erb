@@ -1,6 +1,13 @@
-<form action="addPotato" method="post">
+<form action="addPotato" method="post" accept-charset="UTF-8" id="hotpotato">
     <textarea class="form-control" rows="10" name="potato" placeholder="paste your hot potato"></textarea>
     <label for="secret">Encryption key:</label>
     <input type="text" name="secret" value="<%= @my_secret %>">
+    <label for="ttl">TTL:</label>
+    <select name="ttl" id="cars">
+      <option value="1h">1h</option>
+      <option value="4h">4h</option>
+      <option value="8h">8h</option>
+      <option value="24h">24h</option>
+    </select>
     <button type="submit" class="btn btn-primary">Send the potato</button>
 </form>
