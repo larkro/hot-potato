@@ -72,6 +72,8 @@ class HotPotato < Sinatra::Base
   end
 
   get "/" do
+    @ttl = { "1 day" => 86400, "3 days" => 259200, "7 days" => 604800 }
+    @default_ttl = "3 days"
     @title = "Add HotPotato"
     @my_secret = genRandom
     erb :index
@@ -93,13 +95,16 @@ class HotPotato < Sinatra::Base
     @title = "Potato added"
     param :potato, String, required: true
     param :secret, String, required: true
+    param :ttl, Integer, required: true
     one_of :potato, raise: true
     one_of :secret, raise: true
-    if params["potato"] == "" || params["secret"] == ""
+    one_of :ttl, raise: true
+    if params["potato"] == "" || params["secret"] == "" || params["ttl"] == ""
       redirect to("/")
     else
       @potato = Base64.encode64(params["potato"])
       @secret = params["secret"]
+      @ttl = params["ttl"]
       @cipher = encryptPotato(@secret, @potato)
       erb :potato
     end

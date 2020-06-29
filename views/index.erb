@@ -3,11 +3,10 @@
     <label for="secret">Encryption key:</label>
     <input type="text" name="secret" value="<%= @my_secret %>">
     <label for="ttl">TTL:</label>
-    <select name="ttl" id="cars">
-      <option value="1h">1h</option>
-      <option value="4h">4h</option>
-      <option value="8h">8h</option>
-      <option value="24h">24h</option>
+    <select name="ttl" id="ttl">
+    <% @ttl.each do |key,value| %>
+      <option value="<%=value%>"><%=key%></option>
+    <% end %>
     </select>
     <button type="submit" class="btn btn-primary">Send the potato</button>
 </form>
