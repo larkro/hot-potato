@@ -21,7 +21,9 @@ class PotatoCollection
   end
 
   def self.getPotato id
-    @@potatoes.to_h[id]
+    @potato = @@potatoes.to_h[id]
+    @@potatoes.delete(id)
+    @potato
   end
 
   def generateId
@@ -114,7 +116,8 @@ class HotPotato < Sinatra::Base
   # @@potatoes.getPotato("{params[:potato]").to_s
   get "/get/:potato" do
     @potato = params["potato"]
-    PotatoCollection.getPotato(@potato).to_s
+    @p = PotatoCollection.getPotato(@potato)
+    erb '<p>Your potato</p><pre><%= @p %></pre>'
   end
 
   # Kubernetes healthcheck
