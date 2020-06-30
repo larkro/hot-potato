@@ -18,6 +18,7 @@ class PotatoCollection
     id = generateId
     # @potatoes.merge!({ generateId => { msg: "msg-1", secret: "secret-1" }})
     @@potatoes.merge!({id => potato})
+    @potato = @@potatoes.to_h[id]
   end
 
   def self.getPotato id
@@ -73,6 +74,16 @@ class HotPotato < Sinatra::Base
     cipher << aes.final
   end
 
+  def decryptPotato(secret, potato)
+    alg = "AES-256-CBC"
+    decode_cipher = OpenSSL::Cipher::Cipher.new(alg)
+    decode_cipher.decrypt
+    decode_cipher.key = key
+    decode_cipher.iv = iv
+    plain = decode_cipher.update(cipher64.unpack('m')[0])
+    plain << decode_cipher.final
+  end
+
   get "/" do
     @ttl = { "1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800 }
     @default_ttl = "3 days"
@@ -108,6 +119,7 @@ class HotPotato < Sinatra::Base
       @secret = params["secret"]
       @ttl = params["ttl"]
       @cipher = encryptPotato(@secret, @potato)
+      @my_potato = @@potatoes.add({msg: @potato, secret: @secret})
       erb :potato
     end
   end
@@ -116,8 +128,12 @@ class HotPotato < Sinatra::Base
   # @@potatoes.getPotato("{params[:potato]").to_s
   get "/get/:potato" do
     @potato = params["potato"]
-    @p = PotatoCollection.getPotato(@potato)
-    erb '<p>Your potato</p><pre><%= @p %></pre>'
+    @p = PotatoCollection.getPotato(@potato).to_h
+    if @p == nil
+      redirect to("/")
+    else
+      erb '<p>Your potato</p><pre><%= @p[:secret] %></pre></p><pre><%= @p[:msg] %></pre>'
+    end
   end
 
   # Kubernetes healthcheck
