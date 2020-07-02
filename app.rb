@@ -53,39 +53,53 @@ class HotPotato < Sinatra::Base
     SecureRandom.alphanumeric(10)
   end
 
-  def generateInitializationVector
-    OpenSSL::Cipher.new(settings.alg).random_iv
-  end
-
-  def encryptPotato(secret, potato, iv)
-    digest = Digest::SHA256.new
-    digest.update(secret)
-    key = digest.digest
-
-    aes = OpenSSL::Cipher.new(settings.alg)
-    aes.encrypt
-    aes.key = key
-    aes.iv = iv
-
-    cipher = aes.update(potato)
-    cipher << aes.final
+  def encryptPotato(secret, potato)
+    salt = OpenSSL::Random.random_bytes(16)
+    iter = 20000
+    cipher = OpenSSL::Cipher.new(settings.alg)
+    key = OpenSSL::PKCS5.pbkdf2_hmac_sha1(secret, salt, iter, cipher.key_len)
+    cipher.encrypt
+    cipher.key = key
+    iv = OpenSSL::Cipher.new(settings.alg).random_iv
+    cipher.iv = iv
+    encrypted = cipher.update(potato) + cipher.final
+    PotatoCollection.instance.add({msg: encrypted, salt: salt, iv: iv})
   end
 
   def decryptPotato(secret, potato)
-    alg = "AES-256-CBC"
-    key = secret
-    iv = potato[:iv]
-    msg = potato[:msg]
-    p key
-    p iv
-    p msg
-    decode_cipher = OpenSSL::Cipher::Cipher.new(alg)
-    decode_cipher.decrypt
-    decode_cipher.key = key
-    decode_cipher.iv = iv
-    plain = decode_cipher.update(cipher64.unpack1("m"))
-    plain << decode_cipher.final
+    # decipher = OpenSSL::Cipher::AES.new(128, :CBC)
+    # decipher.decrypt
+    # decipher.key = key
+    # decipher.iv = iv
+    # plain = decipher.update(encrypted) + decipher.final
+    decipher = OpenSSL::Cipher.new(settings.alg)
+
+    salt = potato[:salt]
+    iter = 20000
+    key = OpenSSL::PKCS5.pbkdf2_hmac_sha1(secret, salt, iter, decipher.key_len)
+
+    decipher.decrypt
+    decipher.key = key
+    decipher.iv = potato[:iv]
+
+    decipher.update(potato[:msg]) + decipher.final
   end
+
+  # def decryptPotato(secret, potato)
+  #   alg = "AES-256-CBC"
+  #   key = secret
+  #   iv = potato[:iv]
+  #   msg = potato[:msg]
+  #   p key
+  #   p iv
+  #   p msg
+  #   decode_cipher = OpenSSL::Cipher.new(alg)
+  #   decode_cipher.decrypt
+  #   decode_cipher.key = key
+  #   decode_cipher.iv = iv
+  #   plain = decode_cipher.update(cipher64.unpack1("m"))
+  #   plain << decode_cipher.final
+  # end
 
   get "/" do
     @ttl = {"1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800}
@@ -121,9 +135,8 @@ class HotPotato < Sinatra::Base
       @potato = Base64.encode64(params["potato"])
       @secret = params["secret"]
       @ttl = params["ttl"]
-      @iv = generateInitializationVector
-      @cipher = encryptPotato(@secret, @potato, @iv)
-      @my_potato = PotatoCollection.instance.add({msg: @cipher, secret: @secret, iv: @iv})
+      @encrypted = encryptPotato(@secret, @potato)
+      #      @my_potato = PotatoCollection.instance.add({msg: @encrypted, secret: @secret, iv: @iv})
       erb :potato
     end
   end
@@ -133,11 +146,11 @@ class HotPotato < Sinatra::Base
   get "/get/:potato" do
     @potato = params["potato"]
     @p = PotatoCollection.instance.getPotato(@potato).to_h
-    if @p.nil?
+    if @p.nil? || @p = ""
       redirect to("/")
     else
-      # decryptPotato(1,@p)
-      erb "<p>Your potato</p><pre><%= @p[:secret] %></pre></p><pre><%= @p[:msg] %></pre>"
+      @plain = decryptPotato("1", @p)
+      erb "<p>Your potato</p><pre><%= @p[:salt] %></pre></p><pre><%= @p[:msg] %></pre><pre><%= @p[:iv] %></pre></pre><pre><%= @plain %></pre>"
     end
   end
 
