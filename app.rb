@@ -146,7 +146,7 @@ class HotPotato < Sinatra::Base
   get "/get/:potato" do
     @potato = params["potato"]
     @p = PotatoCollection.instance.getPotato(@potato).to_h
-    if @p.nil? || @p = ""
+    if @p.empty?
       redirect to("/")
     else
       @plain = decryptPotato("1", @p)
