@@ -3,7 +3,8 @@
 <pre><%= Base64.decode64(@potato) %></pre>
 <p>TTL was</p>
 <p><%= @ttl %><p>
-<p>Your encryptedPotato was</p>
+<p>Your encryptedPotato is stored at: </p>
+<a href="/get/<%= @encrypted %>"><%= @encrypted %></a>
 <p><%= @cipher %><p>
-<pre><%= @my_potato %></pre>
+<pre><%= @encrypted %></pre>
 <a href="/">Let's do it again!</a>

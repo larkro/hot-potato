@@ -16,7 +16,7 @@ class PotatoCollection
   def add(potato)
     id = generateId
     @@potatoes[id] = potato
-    @potato = @@potatoes.to_h[id]
+    id
   end
 
   def getPotato(id)
@@ -67,11 +67,6 @@ class HotPotato < Sinatra::Base
   end
 
   def decryptPotato(secret, potato)
-    # decipher = OpenSSL::Cipher::AES.new(128, :CBC)
-    # decipher.decrypt
-    # decipher.key = key
-    # decipher.iv = iv
-    # plain = decipher.update(encrypted) + decipher.final
     decipher = OpenSSL::Cipher.new(settings.alg)
 
     salt = potato[:salt]
@@ -84,22 +79,6 @@ class HotPotato < Sinatra::Base
 
     decipher.update(potato[:msg]) + decipher.final
   end
-
-  # def decryptPotato(secret, potato)
-  #   alg = "AES-256-CBC"
-  #   key = secret
-  #   iv = potato[:iv]
-  #   msg = potato[:msg]
-  #   p key
-  #   p iv
-  #   p msg
-  #   decode_cipher = OpenSSL::Cipher.new(alg)
-  #   decode_cipher.decrypt
-  #   decode_cipher.key = key
-  #   decode_cipher.iv = iv
-  #   plain = decode_cipher.update(cipher64.unpack1("m"))
-  #   plain << decode_cipher.final
-  # end
 
   get "/" do
     @ttl = {"1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800}
@@ -141,8 +120,6 @@ class HotPotato < Sinatra::Base
     end
   end
 
-  # "Hello #{params[:potato]}"
-  # @@potatoes.getPotato("{params[:potato]").to_s
   get "/get/:potato" do
     @potato = params["potato"]
     @p = PotatoCollection.instance.getPotato(@potato).to_h
@@ -150,7 +127,7 @@ class HotPotato < Sinatra::Base
       redirect to("/")
     else
       @plain = decryptPotato("1", @p)
-      erb "<p>Your potato</p><pre><%= @p[:salt] %></pre></p><pre><%= @p[:msg] %></pre><pre><%= @p[:iv] %></pre></pre><pre><%= @plain %></pre>"
+      erb "<p>Your potato</p> <pre><%= Base64.decode64(@plain) %></pre>"
     end
   end
 
