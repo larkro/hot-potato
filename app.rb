@@ -13,10 +13,14 @@ class PotatoCollection
     @@potatoes = {}
   end
 
-  def add(potato)
-    id = generateId
-    @@potatoes[id] = potato
-    id
+  def add(secret, potato, alg)
+    if (@encrypted_potato = encryptPotato(secret, potato, alg))
+      id = generateId
+      @@potatoes[id] = @encrypted_potato
+      id
+    else
+      "Not saved"
+    end
   end
 
   def get(id, secret, alg)
@@ -25,7 +29,7 @@ class PotatoCollection
       @@potatoes.delete(id)
       @plain
     else
-      "no potato here"
+      "No potato here"
     end
   end
 
@@ -35,6 +39,22 @@ class PotatoCollection
   # end
 
   private
+
+  def encryptPotato(secret, potato, alg)
+    cipher = OpenSSL::Cipher.new(alg)
+
+    salt = OpenSSL::Random.random_bytes(16)
+    iter = 20000
+    key = OpenSSL::PKCS5.pbkdf2_hmac_sha1(secret, salt, iter, cipher.key_len)
+    iv = OpenSSL::Cipher.new(alg).random_iv
+
+    cipher.encrypt
+    cipher.key = key
+    cipher.iv = iv
+
+    encrypted = cipher.update(potato) + cipher.final
+    {msg: encrypted, salt: salt, iv: iv}
+  end
 
   def decryptPotato(secret, potato, alg)
     decipher = OpenSSL::Cipher.new(alg)
@@ -52,7 +72,6 @@ class PotatoCollection
 
   def generateId
     loop do
-      # token = SecureRandom.hex(5)
       token = SecureRandom.urlsafe_base64(5)
       break token unless @@potatoes.include?(token)
     end
@@ -68,18 +87,10 @@ class HotPotato < Sinatra::Base
     set :alg, "AES-256-CBC"
   end
 
-  def encryptPotato(secret, potato)
-    salt = OpenSSL::Random.random_bytes(16)
-    iter = 20000
-    cipher = OpenSSL::Cipher.new(settings.alg)
-    key = OpenSSL::PKCS5.pbkdf2_hmac_sha1(secret, salt, iter, cipher.key_len)
-    cipher.encrypt
-    cipher.key = key
-    iv = OpenSSL::Cipher.new(settings.alg).random_iv
-    cipher.iv = iv
-    encrypted = cipher.update(potato) + cipher.final
-    PotatoCollection.instance.add({msg: encrypted, salt: salt, iv: iv})
-  end
+  # TODO remove, debug purpose only
+  # get "/list/" do
+  #   PotatoCollection.instance.all.to_s
+  # end
 
   get "/" do
     @ttl = {"1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800}
@@ -88,11 +99,6 @@ class HotPotato < Sinatra::Base
     @my_secret = SecureRandom.alphanumeric(10)
     erb :index
   end
-
-  # TODO remove, debug purpose only
-  # get "/list/" do
-  #   PotatoCollection.instance.all.to_s
-  # end
 
   post "/addPotato" do
     @title = "Potato added"
@@ -108,9 +114,8 @@ class HotPotato < Sinatra::Base
       @potato = Base64.encode64(params["potato"])
       @secret = params["secret"]
       @ttl = params["ttl"]
-      @encrypted = encryptPotato(@secret, @potato)
+      @encrypted = PotatoCollection.instance.add(@secret, @potato, settings.alg)
       @base_url = request.base_url
-      #      @my_potato = PotatoCollection.instance.add({msg: @encrypted, secret: @secret, iv: @iv})
       erb :addpotato
     end
   end
