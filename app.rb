@@ -19,17 +19,36 @@ class PotatoCollection
     id
   end
 
-  def get(id)
+  def get(id, secret, alg)
     @potato = @@potatoes.to_h[id]
-    @@potatoes.delete(id)
-    @potato
+    if @plain = decryptPotato(secret, @potato, alg)
+      @@potatoes.delete(id)
+      @plain
+    else
+      "no potato here"
+    end
   end
 
-  def all
-    @@potatoes
-  end
+  # TODO remove, debug purpose only
+  # def all
+  #   @@potatoes
+  # end
 
   private
+
+  def decryptPotato(secret, potato, alg)
+    decipher = OpenSSL::Cipher.new(alg)
+
+    salt = potato[:salt]
+    iter = 20000
+    key = OpenSSL::PKCS5.pbkdf2_hmac_sha1(secret, salt, iter, decipher.key_len)
+
+    decipher.decrypt
+    decipher.key = key
+    decipher.iv = potato[:iv]
+
+    decipher.update(potato[:msg]) + decipher.final
+  end
 
   def generateId
     loop do
@@ -66,20 +85,6 @@ class HotPotato < Sinatra::Base
     PotatoCollection.instance.add({msg: encrypted, salt: salt, iv: iv})
   end
 
-  def decryptPotato(secret, potato)
-    decipher = OpenSSL::Cipher.new(settings.alg)
-
-    salt = potato[:salt]
-    iter = 20000
-    key = OpenSSL::PKCS5.pbkdf2_hmac_sha1(secret, salt, iter, decipher.key_len)
-
-    decipher.decrypt
-    decipher.key = key
-    decipher.iv = potato[:iv]
-
-    decipher.update(potato[:msg]) + decipher.final
-  end
-
   get "/" do
     @ttl = {"1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800}
     @default_ttl = "3 days"
@@ -88,17 +93,10 @@ class HotPotato < Sinatra::Base
     erb :index
   end
 
-  # get "/test/" do
-  #   msg = genRandom
-  #   secret = genRandom
-  #   @@potatoes.add("{msg: \"msg-#{msg}\", secret: \"secret-#{secret}\"}")
-  #   erb '<a href="/test/"> do it again!</a>'
-  #   # redirect to("/")
+  # TODO remove, debug purpose only
+  # get "/list/" do
+  #   PotatoCollection.instance.all.to_s
   # end
-
-  get "/list/" do
-    PotatoCollection.instance.all.to_s
-  end
 
   post "/addPotato" do
     @title = "Potato added"
@@ -135,12 +133,12 @@ class HotPotato < Sinatra::Base
     if params["potato"] == "" || params["secret"] == ""
       redirect to("/")
     else
-      @p = PotatoCollection.instance.get(@potato).to_h
+      @p = PotatoCollection.instance.get(@potato, @secret, settings.alg)
       if @p.empty?
         redirect to("/")
       else
-        @plain = decryptPotato(@secret, @p)
-        erb "<p>Your potato</p> <pre><%= Base64.decode64(@plain) %></pre>"
+        # @plain = decryptPotato(@secret, @p)
+        erb "<p>Your potato</p> <pre><%= Base64.decode64(@p) %></pre>"
       end
     end
   end
