@@ -68,10 +68,6 @@ class HotPotato < Sinatra::Base
     set :alg, "AES-256-CBC"
   end
 
-  def genRandom
-    SecureRandom.alphanumeric(10)
-  end
-
   def encryptPotato(secret, potato)
     salt = OpenSSL::Random.random_bytes(16)
     iter = 20000
@@ -89,7 +85,7 @@ class HotPotato < Sinatra::Base
     @ttl = {"1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800}
     @default_ttl = "3 days"
     @title = "Send a HotPotato"
-    @my_secret = genRandom
+    @my_secret = SecureRandom.alphanumeric(10)
     erb :index
   end
 
@@ -140,17 +136,6 @@ class HotPotato < Sinatra::Base
         # @plain = decryptPotato(@secret, @p)
         erb "<p>Your potato</p> <pre><%= Base64.decode64(@p) %></pre>"
       end
-    end
-  end
-
-  get "/get/:potato" do
-    @potato = params["potato"]
-    @p = PotatoCollection.instance.get(@potato).to_h
-    if @p.empty?
-      redirect to("/")
-    else
-      @plain = decryptPotato("1", @p)
-      erb "<p>Your potato</p> <pre><%= Base64.decode64(@plain) %></pre>"
     end
   end
 
