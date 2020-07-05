@@ -42,7 +42,7 @@ jobs:
 
     - name: erb linting
       run: |
-        erblint views/*
+        bundle exec erblint views/*
 
     - name: Running tests
       run: |
