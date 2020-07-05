@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charser="UTF-8">
+        <meta charset="utf-8">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="0">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     </head>
     <body class=container>
         <h1> <%= @title %> </h1>
+        <hr>
         <%= yield %>
+        <hr>
+        <footer>
+            <div class="row">
+                <div class="col-3">
+                    <p><a href="/">Send new potato</a></p>
+                </div>
+                <div class="col-3">
+                    <p><a href="/get">Get potato</a></p>
+                </div>
+                <div class="col-3">
+                    <p>Author: <a href="https://www.mccc.se">mccc</a></p>
+                </div>
+            </div>
+        </footer>
     </body>
 </html>

@@ -1,6 +1,63 @@
 require "sinatra/base"
 require "sinatra/param"
 require "openssl"
+require "securerandom"
+require "digest/sha2"
+require "base64"
+require "singleton"
+
+class PotatoCollection
+  include Singleton
+
+  def initialize
+    @@potatoes = {}
+  end
+
+  def add(potato)
+    id = generateId
+    @@potatoes[id] = potato
+    id
+  end
+
+  def get(id, secret, alg)
+    @potato = @@potatoes.to_h[id]
+    if (@plain = decryptPotato(secret, @potato, alg))
+      @@potatoes.delete(id)
+      @plain
+    else
+      "no potato here"
+    end
+  end
+
+  # TODO remove, debug purpose only
+  # def all
+  #   @@potatoes
+  # end
+
+  private
+
+  def decryptPotato(secret, potato, alg)
+    decipher = OpenSSL::Cipher.new(alg)
+
+    salt = potato[:salt]
+    iter = 20000
+    key = OpenSSL::PKCS5.pbkdf2_hmac_sha1(secret, salt, iter, decipher.key_len)
+
+    decipher.decrypt
+    decipher.key = key
+    decipher.iv = potato[:iv]
+
+    decipher.update(potato[:msg]) + decipher.final
+  end
+
+  def generateId
+    loop do
+      # token = SecureRandom.hex(5)
+      token = SecureRandom.urlsafe_base64(5)
+      break token unless @@potatoes.include?(token)
+    end
+  end
+end
 
 class HotPotato < Sinatra::Base
   helpers Sinatra::Param
@@ -8,23 +65,80 @@ class HotPotato < Sinatra::Base
   configure do
     set :bind, "0.0.0.0" # Default dev env is localhost only, works bad with containers.
     # set :port, 443 # Uncomment if handling TLS
+    set :alg, "AES-256-CBC"
+  end
+
+  def encryptPotato(secret, potato)
+    salt = OpenSSL::Random.random_bytes(16)
+    iter = 20000
+    cipher = OpenSSL::Cipher.new(settings.alg)
+    key = OpenSSL::PKCS5.pbkdf2_hmac_sha1(secret, salt, iter, cipher.key_len)
+    cipher.encrypt
+    cipher.key = key
+    iv = OpenSSL::Cipher.new(settings.alg).random_iv
+    cipher.iv = iv
+    encrypted = cipher.update(potato) + cipher.final
+    PotatoCollection.instance.add({msg: encrypted, salt: salt, iv: iv})
   end
 
   get "/" do
-    @title = "Add HotPotato"
+    @ttl = {"1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800}
+    @default_ttl = "3 days"
+    @title = "Send a HotPotato"
+    @my_secret = SecureRandom.alphanumeric(10)
     erb :index
   end
 
+  # TODO remove, debug purpose only
+  # get "/list/" do
+  #   PotatoCollection.instance.all.to_s
+  # end
+
   post "/addPotato" do
-    param :potato, String, required: true
-    one_of :potato
     @title = "Potato added"
-    @potato = params["potato"]
-    erb :potato
+    param :potato, String, required: true
+    param :secret, String, required: true
+    param :ttl, Integer, required: true
+    one_of :potato, raise: true
+    one_of :secret, raise: true
+    one_of :ttl, raise: true
+    if params["potato"] == "" || params["secret"] == "" || params["ttl"] == ""
+      redirect to("/")
+    else
+      @potato = Base64.encode64(params["potato"])
+      @secret = params["secret"]
+      @ttl = params["ttl"]
+      @encrypted = encryptPotato(@secret, @potato)
+      @base_url = request.base_url
+      #      @my_potato = PotatoCollection.instance.add({msg: @encrypted, secret: @secret, iv: @iv})
+      erb :addpotato
+    end
   end
 
-  get "/get/:potato" do
-    "Hello #{params[:potato]}"
+  get "/get" do
+    @title = "Get HotPotato"
+    @potato_id = params["potato"]
+    erb :get
+  end
+
+  post "/getPotato" do
+    @title = "Your potato"
+    param :potato, String, required: true
+    param :secret, String, required: true
+    one_of :potato, raise: true
+    one_of :secret, raise: true
+    @potato = params["potato"]
+    @secret = params["secret"]
+    if params["potato"] == "" || params["secret"] == ""
+      redirect to("/get")
+    else
+      @p = PotatoCollection.instance.get(@potato, @secret, settings.alg)
+      if @p.empty?
+        redirect to("/")
+      else
+        erb :gotpotato
+      end
+    end
   end
 
   # Kubernetes healthcheck

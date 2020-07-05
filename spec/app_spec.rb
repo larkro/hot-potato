@@ -5,7 +5,7 @@ describe HotPotato do
   it "should allow accessing the home page" do
     get "/"
     expect(last_response).to be_ok
-    expect(last_response.body).to match("Add HotPotato")
+    expect(last_response.body).to match("Send a HotPotato")
   end
   it "should not allow GET access to post page" do
     get "/addPotato"
@@ -19,8 +19,39 @@ describe HotPotato do
     post "/addPotato", 'junk="testing"'
     expect(last_response).not_to be_ok
   end
-  it "should allow POST access to /addPotato with form field potato" do
-    post "/addPotato", 'potato="string to be encrypted"'
+  it "should not allow POST access to /addPotato with bad form" do
+    post "/addPotato", {
+      junk: "testing"
+    }
+    expect(last_response).not_to be_ok
+  end
+  it "should not allow POST access to /addPotato with potato only" do
+    post "/addPotato", {
+      potato: "testing"
+    }
+    expect(last_response).not_to be_ok
+  end
+  it "should NOT allow POST access to /addPotato with form field TTL as String" do
+    post "/addPotato", {
+      potato: "string to be encrypted",
+      secret: "adsasd",
+      ttl: "adsasd"
+    }
+    expect(last_response).not_to be_ok
+  end
+  it "should NOT allow POST access to /addPotato without all three form field " do
+    post "/addPotato", {
+      potato: "string to be encrypted",
+      ttl: "adsasd"
+    }
+    expect(last_response).not_to be_ok
+  end
+  it "should allow POST access to /addPotato with form field potato, secret and ttl" do
+    post "/addPotato", {
+      potato: "string to be encrypted",
+      secret: "adsasd",
+      ttl: "123"
+    }
     expect(last_response).to be_ok
   end
   it "should allow kubernetes healthcheck" do

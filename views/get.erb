@@ -1,0 +1,21 @@
+<form action="getPotato" method="post" accept-charset="UTF-8" id="hotpotato">
+    <div class="row">
+        <div class="col-3">
+            <label for="potato">Secret potato id:</label>
+        </div>
+        <div class="col-6">
+            <input class="form-control input-sm" type="text" name="potato" value="<%= @potato_id %>" placeholder="insert potato id">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <label for="secret">Secret password:</label>
+        </div>
+        <div class="col-6">
+            <input class="form-control input-sm" type="text" name="secret" value="" placeholder="insert secret">
+        </div>
+    </div>
+    <div class="row">
+        <button type="submit" class="btn btn-primary btn-block">Get me my potato</button>
+    </div>
+</form>

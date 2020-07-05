@@ -1,4 +1,33 @@
-<form action="addPotato" method="post">
-    <textarea class="form-control" rows="10" name="potato" placeholder="paste your hot potato"></textarea>
-    <button type="submit" class="btn btn-primary">Send the potato</button>
+<form action="addPotato" method="post" accept-charset="UTF-8" id="hotpotato">
+  <div class="row">
+    <textarea class="form-control input-sm" rows="10" name="potato" placeholder="paste your hot potato"></textarea>
+  </div>
+
+  <div class="row">
+    <div class="col-3">
+      <label for="secret">Secret password:</label>
+    </div>
+    <div class="col-6">
+      <input class="form-control input-sm" type="text" name="secret" value="<%= @my_secret %>">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-3">
+      <label for="ttl">TTL:</label>
+    </div>
+    <div class="col-6">
+      <select class="form-control input-sm" name="ttl" id="ttl">
+      <% @ttl.each do |key,value| %>
+        <option class="form-control input-sm" value="<%= value %>"><%= key %></option>
+      <% end %>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary btn-block">Send the potato</button>
+    </div>
+  </div>
 </form>
