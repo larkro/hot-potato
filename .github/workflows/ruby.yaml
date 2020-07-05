@@ -47,4 +47,5 @@ jobs:
 
     - name: Running tests
       run: |
+        gem install rspec
         rspec
