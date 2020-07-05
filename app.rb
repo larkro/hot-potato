@@ -19,7 +19,7 @@ class PotatoCollection
       @@potatoes[id] = @encrypted_potato
       id
     else
-      "Not saved"
+      Base64.encode64("Not saved")
     end
   end
 
@@ -28,18 +28,19 @@ class PotatoCollection
     if @potato.nil?
       Base64.encode64("No potato for you")
     else
-      if (@plain = decryptPotato(secret, @potato, alg))
-        if @plain.class == Hash
-          Base64.encode64("No potato for you")
-        else
-          @@potatoes.delete(id)
-          @plain
-        end
+      @plain = decryptPotato(secret, @potato, alg)
+      # Hash comes from rescue OpenSSL::Cipher::CipherError.
+      # Hiding that the potato existed but supplied passwd was bad.
+      if @plain.class == Hash
+        Base64.encode64("No potato for you")
+      else
+        @@potatoes.delete(id)
+        @plain
       end
     end
   end
 
-  # # TODO remove, debug purpose only
+  # TODO remove, debug purpose only
   # def all
   #   @@potatoes
   # end
