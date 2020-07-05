@@ -42,10 +42,8 @@ jobs:
 
     - name: erb linting
       run: |
-        gem install erb_lint
-        bundle exec erblint views/*
+        erblint views/*
 
     - name: Running tests
       run: |
-        gem install rspec
-        bundle exec rspec
+        rspec
