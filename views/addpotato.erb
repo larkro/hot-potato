@@ -1,13 +1,10 @@
-<p>Thanks for posting</p>
 <p>Your Potato is now encrypted.</p>
-<p>It can be retrieved using <i>Secret potato id </i>: <pre><%= @encrypted %></pre></p>
-<p>or at this url: href="http://localhost:9292/get?potato=<%= @encrypted %>"</p>
-<a href="/get?potato=<%= @encrypted %>"><%= @encrypted %></a>
-<p>It is encrypted using the password: <pre><%= @secret %></pre></p>
-<p>TTL was</p>
-<p><%= @ttl %><p>
+<p>Send this information to the recipient:</p>
 <hr>
 <div class="jumbotron" id="msg">
+    <p>This link has a Hot Potato for you</p>
     <p><%= @base_url %>/get?potato=<%= @encrypted %><p>
+    <p>To read it you need to submit this password</p>
     <p><%= @secret %></p>
+    <p><b>Note:</b> It works only once. When read, it's deleted.</p>
 </div>
