@@ -47,5 +47,5 @@ jobs:
 
     - name: Running tests
       run: |
-        gem install rspec
+        gem install rspec rack-test
         rspec
