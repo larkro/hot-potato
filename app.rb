@@ -109,6 +109,7 @@ class HotPotato < Sinatra::Base
       @secret = params["secret"]
       @ttl = params["ttl"]
       @encrypted = encryptPotato(@secret, @potato)
+      @base_url = request.base_url
       #      @my_potato = PotatoCollection.instance.add({msg: @encrypted, secret: @secret, iv: @iv})
       erb :addpotato
     end
@@ -116,7 +117,7 @@ class HotPotato < Sinatra::Base
 
   get "/get" do
     @title = "Get HotPotato"
-    @potatoId = params["potato"]
+    @potato_id = params["potato"]
     erb :get
   end
 
