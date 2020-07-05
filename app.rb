@@ -88,7 +88,7 @@ class HotPotato < Sinatra::Base
   get "/" do
     @ttl = {"1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800}
     @default_ttl = "3 days"
-    @title = "Add HotPotato"
+    @title = "Send a HotPotato"
     @my_secret = genRandom
     erb :index
   end
@@ -131,7 +131,7 @@ class HotPotato < Sinatra::Base
     @potato = params["potato"]
     @secret = params["secret"]
     if params["potato"] == "" || params["secret"] == ""
-      redirect to("/")
+      redirect to("/get")
     else
       @p = PotatoCollection.instance.get(@potato, @secret, settings.alg)
       if @p.empty?
