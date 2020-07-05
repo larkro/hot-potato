@@ -6,6 +6,13 @@
     </head>
     <body class=container>
         <h1> <%= @title %> </h1>
+        <hr>
         <%= yield %>
+        <hr>
+        <footer>
+            <p>Author: mccc.se</p>
+            <p><a href="/">home</a></p>
+            <p><a href="/get">get</a></p>
+        </footer>
     </body>
 </html>

@@ -19,7 +19,7 @@ class PotatoCollection
     id
   end
 
-  def getPotato(id)
+  def get(id)
     @potato = @@potatoes.to_h[id]
     @@potatoes.delete(id)
     @potato
@@ -120,9 +120,34 @@ class HotPotato < Sinatra::Base
     end
   end
 
+  get "/get" do
+    @title = "Get HotPotato"
+    erb :get
+  end
+
+  post "/getPotato" do
+    param :potato, String, required: true
+    param :secret, String, required: true
+    one_of :potato, raise: true
+    one_of :secret, raise: true
+    @potato = params["potato"]
+    @secret = params["secret"]
+    if params["potato"] == "" || params["secret"] == ""
+      redirect to("/")
+    else
+      @p = PotatoCollection.instance.get(@potato).to_h
+      if @p.empty?
+        redirect to("/")
+      else
+        @plain = decryptPotato(@secret, @p)
+        erb "<p>Your potato</p> <pre><%= Base64.decode64(@plain) %></pre>"
+      end
+    end
+  end
+
   get "/get/:potato" do
     @potato = params["potato"]
-    @p = PotatoCollection.instance.getPotato(@potato).to_h
+    @p = PotatoCollection.instance.get(@potato).to_h
     if @p.empty?
       redirect to("/")
     else
