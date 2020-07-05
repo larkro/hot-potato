@@ -38,14 +38,14 @@ jobs:
     - name: Lint Ruby, standardrb
       run: |
         gem install standardrb
-        standardrb app
+        bundle exec standardrb app
 
     - name: erb linting
       run: |
         gem install erb_lint
-        erblint views/*
+        bundle exec erblint views/*
 
     - name: Running tests
       run: |
         gem install rspec
-        rspec
+        bundle exec rspec
