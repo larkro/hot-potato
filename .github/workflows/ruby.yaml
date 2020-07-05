@@ -48,4 +48,5 @@ jobs:
     - name: Running tests
       run: |
         gem install rspec rack-test
+        bundle update --bundler
         bundle exec rspec
