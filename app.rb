@@ -110,7 +110,7 @@ class HotPotato < Sinatra::Base
       @ttl = params["ttl"]
       @encrypted = encryptPotato(@secret, @potato)
       #      @my_potato = PotatoCollection.instance.add({msg: @encrypted, secret: @secret, iv: @iv})
-      erb :potato
+      erb :addpotato
     end
   end
 
@@ -120,6 +120,7 @@ class HotPotato < Sinatra::Base
   end
 
   post "/getPotato" do
+    @title = "Your potato"
     param :potato, String, required: true
     param :secret, String, required: true
     one_of :potato, raise: true
@@ -133,8 +134,7 @@ class HotPotato < Sinatra::Base
       if @p.empty?
         redirect to("/")
       else
-        # @plain = decryptPotato(@secret, @p)
-        erb "<p>Your potato</p> <pre><%= Base64.decode64(@p) %></pre>"
+        erb :gotpotato
       end
     end
   end
