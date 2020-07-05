@@ -25,15 +25,21 @@ class PotatoCollection
 
   def get(id, secret, alg)
     @potato = @@potatoes.to_h[id]
-    if (@plain = decryptPotato(secret, @potato, alg))
-      @@potatoes.delete(id)
-      @plain
+    if @potato.nil?
+      Base64.encode64("No potato for you")
     else
-      "No potato here"
+      if (@plain = decryptPotato(secret, @potato, alg))
+        if @plain.class == Hash
+          Base64.encode64("No potato for you")
+        else
+          @@potatoes.delete(id)
+          @plain
+        end
+      end
     end
   end
 
-  # TODO remove, debug purpose only
+  # # TODO remove, debug purpose only
   # def all
   #   @@potatoes
   # end
@@ -68,6 +74,8 @@ class PotatoCollection
     decipher.iv = potato[:iv]
 
     decipher.update(potato[:msg]) + decipher.final
+  rescue OpenSSL::Cipher::CipherError
+    {msg: "Wrong passwd"}
   end
 
   def generateId
