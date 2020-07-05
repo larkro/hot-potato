@@ -35,10 +35,10 @@ jobs:
         gem install bundler
         bundle install --jobs 4 --retry 3
 
-    - name: Lint Ruby, standardrb
-      run: |
-        gem install standardrb
-        bundle exec standardrb app
+    - name: StandardRB Linter
+      uses: andrewmcodes/standardrb-action@v0.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: erb linting
       run: |
