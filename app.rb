@@ -21,7 +21,7 @@ class PotatoCollection
 
   def get(id, secret, alg)
     @potato = @@potatoes.to_h[id]
-    if @plain = decryptPotato(secret, @potato, alg)
+    if (@plain = decryptPotato(secret, @potato, alg))
       @@potatoes.delete(id)
       @plain
     else
