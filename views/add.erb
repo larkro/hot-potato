@@ -1,0 +1,23 @@
+<p>Your Potato is now encrypted.</p>
+<p>Send this information to the recipient:</p>
+<hr>
+<div class="jumbotron" id="msg">
+  <div class="row">
+    <p class="col-5">There is a Hot Potato for you at:</p>
+    <p class="col-2"><b><%= @base_url %></b></p>
+  </div>
+  <div class="row">
+    <p class="col-5">It's identified by unique id:</p>
+    <p class="col-2"><b><%= @encrypted %></b></p>
+  </div>
+  <div class="row">
+    <p class="col-5">To read it you need to submit this password:</p>
+    <p class="col-2"><b><%= @secret %></b></p>
+  </div>
+  <br>
+  <p>Here is a direct link to your Hot Potato</p>
+  <p><%= @base_url %>/get?potato=<%= @encrypted %><p>
+  <p>Submit password to get it</p>
+  <br>
+  <p><b>Note:</b> It works only once. When read, it's deleted.</p>
+</div>
