@@ -14,8 +14,8 @@ class PotatoCollection
   end
 
   def add(secret, potato, alg)
-    if (@encrypted_potato = encryptPotato(secret, potato, alg))
-      id = generateId
+    if (@encrypted_potato = encrypt_potato(secret, potato, alg))
+      id = generate_id
       @@potatoes[id] = @encrypted_potato
       id
     else
@@ -28,7 +28,7 @@ class PotatoCollection
     if @potato.nil?
       Base64.encode64("No potato for you")
     else
-      @plain = decryptPotato(secret, @potato, alg)
+      @plain = decrypt_potato(secret, @potato, alg)
       # Hash comes from rescue OpenSSL::Cipher::CipherError.
       # Hiding that the potato existed but supplied passwd was bad.
       if @plain.class == Hash
@@ -47,7 +47,7 @@ class PotatoCollection
 
   private
 
-  def encryptPotato(secret, potato, alg)
+  def encrypt_potato(secret, potato, alg)
     cipher = OpenSSL::Cipher.new(alg)
 
     salt = OpenSSL::Random.random_bytes(16)
@@ -63,7 +63,7 @@ class PotatoCollection
     {msg: encrypted, salt: salt, iv: iv}
   end
 
-  def decryptPotato(secret, potato, alg)
+  def decrypt_potato(secret, potato, alg)
     decipher = OpenSSL::Cipher.new(alg)
 
     salt = potato[:salt]
@@ -79,7 +79,7 @@ class PotatoCollection
     {msg: "Wrong passwd"}
   end
 
-  def generateId
+  def generate_id
     loop do
       token = SecureRandom.urlsafe_base64(5)
       break token unless @@potatoes.include?(token)
@@ -109,7 +109,7 @@ class HotPotato < Sinatra::Base
     erb :index
   end
 
-  post "/addPotato" do
+  post "/add" do
     @title = "Potato added"
     param :potato, String, required: true
     param :secret, String, required: true
@@ -125,7 +125,7 @@ class HotPotato < Sinatra::Base
       @ttl = params["ttl"]
       @encrypted = PotatoCollection.instance.add(@secret, @potato, settings.alg)
       @base_url = request.base_url
-      erb :addpotato
+      erb :add
     end
   end
 
@@ -135,7 +135,7 @@ class HotPotato < Sinatra::Base
     erb :get
   end
 
-  post "/getPotato" do
+  post "/get" do
     @title = "Your potato"
     param :potato, String, required: true
     param :secret, String, required: true
@@ -150,7 +150,7 @@ class HotPotato < Sinatra::Base
       if @p.empty?
         redirect to("/")
       else
-        erb :gotpotato
+        erb :got
       end
     end
   end
