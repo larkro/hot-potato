@@ -3,16 +3,16 @@
 <hr>
 <div class="jumbotron" id="msg">
   <div class="row">
-    <p class="col-5">There is a Hot Potato for you at:</p>
-    <p class="col-2"><b><%= @base_url %></b></p>
+    <p class="col-6">There is a Hot Potato for you at:</p>
+    <p class="col-6"><b><%= @base_url %></b></p>
   </div>
   <div class="row">
-    <p class="col-5">It's identified by unique id:</p>
-    <p class="col-2"><b><%= @encrypted %></b></p>
+    <p class="col-6">It's identified by unique id:</p>
+    <p class="col-6"><b><%= @encrypted %></b></p>
   </div>
   <div class="row">
-    <p class="col-5">To read it you need to submit this password:</p>
-    <p class="col-2"><b><%= @secret %></b></p>
+    <p class="col-6">To read it you need to submit this password:</p>
+    <p class="col-6"><b><%= @secret %></b></p>
   </div>
   <br>
   <p>Here is a direct link to your Hot Potato: <%= @base_url %>/get?potato=<%= @encrypted %><p>
