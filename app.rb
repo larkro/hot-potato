@@ -55,8 +55,8 @@ class PotatoCollection
     end
   end
 
-  def check_ttl()
-    @@potatoes.delete_if { |k,v| v[:ttl] <= Time.now.to_i }
+  def check_ttl
+    @@potatoes.delete_if { |k, v| v[:ttl] <= Time.now.to_i }
   end
 
   # TODO remove, debug purpose only
