@@ -1,25 +1,27 @@
 <form action="add" method="post" accept-charset="UTF-8" id="hotpotato">
   <div class="row">
-    <textarea class="form-control input-sm" rows="10" name="potato" placeholder="paste your hot potato"></textarea>
+    <label for="potato">paste your hot potato</label>
+    <textarea class="form-control input-sm" rows="10" name="potato" id="potato" placeholder="paste your hot potato"></textarea>
   </div>
 
   <div class="row">
     <div class="col-3">
-      <label for="secret">Secret password:</label>
+      <label for="secret">Password:</label>
     </div>
     <div class="col-6">
-      <input class="form-control input-sm" type="text" name="secret" value="<%= @my_secret %>">
+      <input class="form-control input-sm" type="text" name="secret" value="<%= @my_secret %>" id="secret">
     </div>
   </div>
 
   <div class="row">
     <div class="col-3">
-      <label for="ttl">TTL:</label>
+      <label for="ttl">Time To Live:</label>
     </div>
     <div class="col-6">
       <select class="form-control input-sm" name="ttl" id="ttl">
       <% @ttl.each do |key,value| %>
-        <option class="form-control input-sm" value="<%= value %>"><%= key %></option>
+        <label for="<%= value %>"><%= key %></label>
+        <option class="form-control input-sm" id="<%= value %>" value="<%= value %>"><%= key %></option>
       <% end %>
       </select>
     </div>
