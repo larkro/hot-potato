@@ -22,7 +22,6 @@
     <div class="col-6">
       <select class="form-control input-sm" name="ttl" id="ttl">
       <% @ttl.each do |key,value| %>
-        <label for="<%= value %>"><%= key %></label>
         <option class="form-control input-sm" id="<%= value %>" value="<%= value %>"><%= key %></option>
       <% end %>
       </select>
