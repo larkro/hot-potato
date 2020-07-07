@@ -1,4 +1,4 @@
-<p>Your Potato is now encrypted.</p>
+<p>Your Potato is now encrypted and will self-destruct  at <%= Time.at(@end_of_life) %>.</p>
 <p>Send this information to the recipient:</p>
 <hr>
 <div class="jumbotron" id="msg">
@@ -15,9 +15,8 @@
     <p class="col-2"><b><%= @secret %></b></p>
   </div>
   <br>
-  <p>Here is a direct link to your Hot Potato</p>
-  <p><%= @base_url %>/get?potato=<%= @encrypted %><p>
-  <p>Submit password to get it</p>
+  <p>Here is a direct link to your Hot Potato: <%= @base_url %>/get?potato=<%= @encrypted %><p>
+  <p>Submit password to get it before: <i><%= Time.at(@end_of_life) %></i> or it will self-destruct.</p>
   <br>
   <p><b>Note:</b> It works only once. When read, it's deleted.</p>
 </div>

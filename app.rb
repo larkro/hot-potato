@@ -1,3 +1,4 @@
+require "sucker_punch"
 require "sinatra/base"
 require "sinatra/param"
 require "openssl"
@@ -6,15 +7,29 @@ require "digest/sha2"
 require "base64"
 require "singleton"
 
+class CleaningJob
+  include SuckerPunch::Job
+
+  def perform
+    wait_time = 60
+    puts "Worker started. Will clean up every #{wait_time} seconds."
+    loop do
+      sleep(wait_time)
+      PotatoCollection.instance.check_ttl
+    end
+  end
+end
+
 class PotatoCollection
   include Singleton
 
   def initialize
     @@potatoes = {}
+    CleaningJob.perform_async
   end
 
-  def add(secret, potato, alg)
-    if (@encrypted_potato = encrypt_potato(secret, potato, alg))
+  def add(secret, potato, alg, end_of_life)
+    if (@encrypted_potato = encrypt_potato(secret, potato, alg, end_of_life))
       id = generate_id
       @@potatoes[id] = @encrypted_potato
       id
@@ -40,6 +55,10 @@ class PotatoCollection
     end
   end
 
+  def check_ttl()
+    @@potatoes.delete_if { |k,v| v[:ttl] <= Time.now.to_i }
+  end
+
   # TODO remove, debug purpose only
   # def all
   #   @@potatoes
@@ -47,7 +66,7 @@ class PotatoCollection
 
   private
 
-  def encrypt_potato(secret, potato, alg)
+  def encrypt_potato(secret, potato, alg, end_of_life)
     cipher = OpenSSL::Cipher.new(alg)
 
     salt = OpenSSL::Random.random_bytes(16)
@@ -60,7 +79,7 @@ class PotatoCollection
     cipher.iv = iv
 
     encrypted = cipher.update(potato) + cipher.final
-    {msg: encrypted, salt: salt, iv: iv}
+    {msg: encrypted, salt: salt, iv: iv, ttl: end_of_life}
   end
 
   def decrypt_potato(secret, potato, alg)
@@ -98,12 +117,14 @@ class HotPotato < Sinatra::Base
 
   # TODO remove, debug purpose only
   # get "/list/" do
-  #   PotatoCollection.instance.all.to_s
+  #   @title = "Debug view"
+  #   @p = PotatoCollection.instance.all.to_h
+  #   erb '<%= @p.each {|key, value| puts "<p>#{key} is #{value}</p>" }%>'
   # end
 
   get "/" do
+    # @ttl = {"debug" => 20, "1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800}
     @ttl = {"1 day (24h)" => 86400, "3 days (72h)" => 259200, "7 days" => 604800}
-    @default_ttl = "3 days"
     @title = "Send a HotPotato"
     @my_secret = SecureRandom.alphanumeric(10)
     erb :index
@@ -123,7 +144,8 @@ class HotPotato < Sinatra::Base
       @potato = Base64.encode64(params["potato"])
       @secret = params["secret"]
       @ttl = params["ttl"]
-      @encrypted = PotatoCollection.instance.add(@secret, @potato, settings.alg)
+      @end_of_life = Time.now.to_i + @ttl
+      @encrypted = PotatoCollection.instance.add(@secret, @potato, settings.alg, @end_of_life)
       @base_url = request.base_url
       erb :add
     end
@@ -153,6 +175,10 @@ class HotPotato < Sinatra::Base
         erb :got
       end
     end
+  end
+
+  not_found do
+    redirect to("/")
   end
 
   # Kubernetes healthcheck
