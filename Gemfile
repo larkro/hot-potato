@@ -3,6 +3,7 @@ gem "sinatra"
 gem "sinatra-param"
 gem "openssl"
 gem "sucker_punch"
+gem "puma"
 
 group :test do
   gem "rack-test"
