@@ -12,27 +12,27 @@ describe HotPotato do
     expect(last_response).not_to be_ok
   end
   it "should not allow POST access to /addPotato with param" do
-    post "/addPotato", params: '{ "widget": { "name":"My Widget" } }'
+    post "/add", params: '{ "widget": { "name":"My Widget" } }'
     expect(last_response).not_to be_ok
   end
   it "should not allow POST access to /addPotato with bad form fields" do
-    post "/addPotato", 'junk="testing"'
+    post "/add", 'junk="testing"'
     expect(last_response).not_to be_ok
   end
   it "should not allow POST access to /addPotato with bad form" do
-    post "/addPotato", {
+    post "/add", {
       junk: "testing"
     }
     expect(last_response).not_to be_ok
   end
   it "should not allow POST access to /addPotato with potato only" do
-    post "/addPotato", {
+    post "/add", {
       potato: "testing"
     }
     expect(last_response).not_to be_ok
   end
   it "should NOT allow POST access to /addPotato with form field TTL as String" do
-    post "/addPotato", {
+    post "/add", {
       potato: "string to be encrypted",
       secret: "adsasd",
       ttl: "adsasd"
@@ -40,14 +40,14 @@ describe HotPotato do
     expect(last_response).not_to be_ok
   end
   it "should NOT allow POST access to /addPotato without all three form field " do
-    post "/addPotato", {
+    post "/add", {
       potato: "string to be encrypted",
       ttl: "adsasd"
     }
     expect(last_response).not_to be_ok
   end
   it "should allow POST access to /addPotato with form field potato, secret and ttl" do
-    post "/addPotato", {
+    post "/add", {
       potato: "string to be encrypted",
       secret: "adsasd",
       ttl: "123"
