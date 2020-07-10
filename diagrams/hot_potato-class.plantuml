@@ -1,0 +1,42 @@
+@startuml hot_potato-class_diagram
+
+class PotatoCollection {
+    include Singleton
+    +initialize
+    +add(secret, potato, alg, end_of_life)
+    +get(id, secret, alg)
+    +check_ttl
+    -encrypt_potato(secret, potato, alg, end_of_life)
+    -decrypt_potato(secret, potato, alg)
+    -generate_id
+}
+
+class CleaningJob {
+  include SuckerPunch::Job
+  +perform
+}
+
+class "HotPotato < Sinatra::Base" as hot_potato {
+    WebApp served by Puma 
+    (0 workers, multiple Threads)
+    -- get --
+    get "/"
+    get "/get"
+    -- set --
+    post "/add"
+    post "/get"
+    -- --
+    not_found
+    get "/healthz"
+}
+
+note top of PotatoCollection
+    initialize, add, get
+    In-Memory hash 
+end note
+
+PotatoCollection -> CleaningJob
+CleaningJob -> PotatoCollection
+hot_potato -> PotatoCollection
+
+@enduml

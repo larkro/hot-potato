@@ -1,0 +1,20 @@
+@startuml hot-potato
+left to right direction
+
+actor "Sender" as Actor1
+actor "Receiver" as Actor2
+package HotPotato {
+    usecase "Post hot potato" as UC1
+    usecase "Get hot potato" as UC2
+    usecase "Destroy hot potato" as UC3
+    rectangle "Encrypted In-Memory" as storage
+}
+
+Actor1 --> UC1 : Post hot potato "Get Url + SecretKey"
+Actor2 --> UC2 
+UC1 --> storage : Encrypts msg with SecretKey
+UC2 --> storage : Fetch from Url, decrypted by SecretKey
+UC3 -left-> storage : Time or Get trigged
+Actor1 -right-> Actor2 : Sends Url and SecretKey
+
+@enduml
