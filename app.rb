@@ -151,7 +151,7 @@ class HotPotato < Sinatra::Base
     end
   end
 
-  get "/get" do
+  get "/get/:potato" do
     @title = "Get HotPotato"
     @potato_id = params["potato"]
     erb :get
