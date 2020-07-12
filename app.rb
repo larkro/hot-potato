@@ -28,6 +28,10 @@ class PotatoCollection
     CleaningJob.perform_async
   end
 
+  def number
+    @@potatoes.count
+  end
+
   def add(secret, potato, alg, end_of_life)
     if (@encrypted_potato = encrypt_potato(secret, potato, alg, end_of_life))
       id = generate_id
@@ -128,6 +132,12 @@ class HotPotato < Sinatra::Base
     @title = "Send a HotPotato"
     @my_secret = SecureRandom.alphanumeric(10)
     erb :index
+  end
+
+  get "/num" do
+    num = PotatoCollection.instance.number
+    @title = "Number of potatoes"
+    erb "<pre>#{num}</pre>"
   end
 
   post "/add" do
