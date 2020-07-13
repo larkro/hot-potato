@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  hotpotato:
+    build: .
+    image: hotpotato:latest
+    ports:
+    - "4567:4567"
