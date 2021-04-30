@@ -50,7 +50,7 @@ class PotatoCollection
       @plain = decrypt_potato(secret, @potato, alg)
       # Hash comes from rescue OpenSSL::Cipher::CipherError.
       # Hiding that the potato existed but supplied passwd was bad.
-      if @plain.class == Hash
+      if @plain.is_a?(Hash)
         Base64.encode64("No potato for you")
       else
         @@potatoes.delete(id)
