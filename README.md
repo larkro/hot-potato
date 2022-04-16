@@ -54,7 +54,7 @@ There is also a deployment to `heroku`, [https://mccc-hot-potato.herokuapp.com/]
 
 ## Ruby version
 
-Written using 2.6.6
+Written using 3.1.2
 
 ## CI/CD
 
