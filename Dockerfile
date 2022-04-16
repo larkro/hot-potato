@@ -1,4 +1,4 @@
-FROM ruby:2.6
+FROM ruby:3.1
 
 # Update packages on ubuntu base
 RUN apt-get update -q -y && apt-get upgrade -y
@@ -10,7 +10,7 @@ WORKDIR $APP_HOME
 # First add Gemfile ...
 ADD Gemfile* $APP_HOME/
 # ... and install needed gems
-RUN gem install bundler:2.1.4
+RUN gem install bundler:2.3.11
 RUN bundle install
 # So when files gets edited only that layer gets rebuilt
 ADD public $APP_HOME/public
