@@ -1,13 +1,13 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    actionview (7.0.4)
-      activesupport (= 7.0.4)
+    actionview (7.0.4.1)
+      activesupport (= 7.0.4.1)
       builder (~> 3.1)
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
-    activesupport (7.0.4)
+    activesupport (7.0.4.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -24,7 +24,7 @@ GEM
     concurrent-ruby (1.1.10)
     crass (1.0.6)
     diff-lcs (1.5.0)
-    erb_lint (0.3.0)
+    erb_lint (0.3.1)
       activesupport
       better_html (>= 2.0.1)
       parser (>= 2.7.1.4)
@@ -39,7 +39,7 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mini_portile2 (2.8.0)
-    minitest (5.16.3)
+    minitest (5.17.0)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.5.8)
