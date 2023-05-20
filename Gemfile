@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "3.1.2"
+ruby "3.1.4"
 
 gem "sinatra"
 gem "sinatra-param"
