@@ -9,7 +9,7 @@ push:	## Push docker image to ttl.sh repo
 
 run:	## Run the image locally
 	docker run \
-		-p 3000:3000 \
+		-p 4567:4567 \
 		-d \
 		--rm \
 		--name ${IMAGE_NAME} \
