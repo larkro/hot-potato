@@ -1,11 +1,15 @@
 IMAGE_NAME="hotpotato"
 TAG="10m"
+REPO="ttl.sh"
 
 build: 	## Build docker image
-	docker build -t ttl.sh/${IMAGE_NAME}:${TAG} .
+	docker build -t ${REPO}/${IMAGE_NAME}:${TAG} .
 
-push:	## Push docker image to ttl.sh repo
-	docker push ttl.sh/${IMAGE_NAME}:${TAG}
+push:	## Push docker image to repo
+	docker push ${REPO}/${IMAGE_NAME}:${TAG}
+
+compose:	## Run locally using docker compose
+	docker-compose up
 
 run:	## Run the image locally
 	docker run \
@@ -13,7 +17,7 @@ run:	## Run the image locally
 		-d \
 		--rm \
 		--name ${IMAGE_NAME} \
-		ttl.sh/${IMAGE_NAME}:${TAG}
+		${REPO}/${IMAGE_NAME}:${TAG}
 
 helm:	## helm upgrade --install
 	helm upgrade ${IMAGE_NAME} --install -f helm-chart/values.yaml helm-chart -n ${IMAGE_NAME} --create-namespace
