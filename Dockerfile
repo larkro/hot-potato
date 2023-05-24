@@ -33,6 +33,7 @@ RUN apt-get update -q -y && apt-get upgrade -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-env $APP_HOME $APP_HOME
+COPY --from=build-env /usr/local/bundle/ /usr/local/bundle/
 
 EXPOSE 4567
 
