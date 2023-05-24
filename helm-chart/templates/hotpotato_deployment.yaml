@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.app }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app }}
+    spec:
+      containers:
+      - name: {{ .Values.app }}
+        image: ttl.sh/{{ .Values.app }}:10m
+        imagePullPolicy: Always
+#        resources:
+#          requests:
+#            memory: "2Mi"
+#            cpu: "10m"
+#          limits:
+#            memory: "16Mi"
+#            cpu: "100m"
+        ports:
+        - containerPort: 4567
