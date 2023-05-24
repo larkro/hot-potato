@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+  labels:
+  name: {{ .Values.app }}
+  namespace: {{ .Values.namespace }}
+spec:
+  rules:
+  - host: hotpotato.mccc.se
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ .Values.app }}
+            port:
+              number: 4567
+        path: /
+        pathType: ImplementationSpecific
+status:
+  loadBalancer:
+    ingress:
+    - hostname: 871a9ca4-3e23-4865-84a8-1437777933f0.k8s.civo.com
