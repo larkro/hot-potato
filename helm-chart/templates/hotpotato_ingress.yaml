@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.clusterIssuer }}
   labels:
   name: {{ .Values.app }}
   namespace: {{ .Values.namespace }}
