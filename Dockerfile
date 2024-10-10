@@ -1,4 +1,4 @@
-FROM ruby:3.3 AS build-env
+FROM ruby:3.3.5 AS build-env
 
 # Update OS package
 RUN apt-get update -q -y && apt-get upgrade -y \
@@ -22,7 +22,7 @@ COPY app.rb config.ru puma.rb $APP_HOME/
 COPY views $APP_HOME/views
 
 ### Second stage
-FROM ruby:3.3-slim
+FROM ruby:3.3.5-slim
 
 ENV APP_HOME /app
 RUN mkdir $APP_HOME
