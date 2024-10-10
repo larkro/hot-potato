@@ -12,4 +12,3 @@ group :test do
   gem "rspec"
   gem "erb_lint", require: false
 end
-
