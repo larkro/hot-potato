@@ -1,12 +1,12 @@
 # First stage: build the application
-FROM ruby:latest AS build-env
+FROM ruby:3.3.5 AS build-env
 
 # Update OS package
 RUN apt-get update -q -y && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-ENV APP_HOME /app
+ENV APP_HOME=/app
 WORKDIR $APP_HOME
 
 # Install gems
@@ -20,9 +20,9 @@ COPY app.rb config.ru puma.rb ./
 COPY views ./views
 
 # Second stage: final production image
-FROM ruby:latest
+FROM ruby:3.3.5-slim
 
-ENV APP_HOME /app
+ENV APP_HOME=/app
 WORKDIR $APP_HOME
 
 # Copy only the necessary from the build stage
