@@ -11,4 +11,6 @@ group :test do
   gem "rack-test"
   gem "rspec"
   gem "erb_lint", require: false
+  gem "rubocop", "~> 1.66"
 end
+

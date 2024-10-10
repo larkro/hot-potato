@@ -136,6 +136,7 @@ DEPENDENCIES
   puma
   rack-test
   rspec
+  rubocop (~> 1.66)
   sinatra
   sinatra-param
   sucker_punch
