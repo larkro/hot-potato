@@ -22,7 +22,7 @@ COPY app.rb config.ru puma.rb $APP_HOME/
 COPY views $APP_HOME/views
 
 ### Second stage
-FROM ruby:3.3.5-slim
+FROM ruby:3-slim
 
 ENV APP_HOME /app
 RUN mkdir $APP_HOME
