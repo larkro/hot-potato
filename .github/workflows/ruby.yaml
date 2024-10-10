@@ -5,24 +5,32 @@ on: [push]
 jobs:
   build:
 
+    timeout-minutes: 10
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup System
-      run: |
-        sudo apt-get update
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
 
-    - name: StandardRB Linter
-      uses: andrewmcodes/standardrb-action@v0.0.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  lint:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: erb linting
-      run: |
-        gem install erb_lint
-        erblint views/*
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Lint code for consistent style
+        run: bin/rubocop -f github
+
+      - name: Erblint
+        run: bundle exec erblint --lint-all
