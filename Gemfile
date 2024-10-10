@@ -10,5 +10,6 @@ gem "puma"
 group :test do
   gem "rack-test"
   gem "rspec"
-  gem "erb_lint", require: false
+  gem "erb_lint"
+  gem "rexml"
 end
