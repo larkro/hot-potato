@@ -11,7 +11,8 @@ WORKDIR $APP_HOME
 
 # Install gems
 COPY Gemfile* ./
-RUN bundle config set without 'development test' \
+RUN gem install bundler \
+    && bundle config --global frozen 1 \
     && bundle install
 
 # Copy application code
