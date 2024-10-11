@@ -49,12 +49,11 @@ The PotatoCollection initialize also starts a asynchronous `SuckerPunch::Job` ba
 
 ## Demo deployment
 
-On the `hotpotato.mccc.se` deployment `nginx` handles `TLS` and `ProxyPass` traffic to `puma` running the `Sinatra` app.
-There is also a deployment to `heroku`, [https://mccc-hot-potato.herokuapp.com/](https://mccc-hot-potato.herokuapp.com/) but since everything is held in-memory and free heroku workers are deleted when inactive the data can not be received.
+On the `hotpotato.mccc.se` deployment `kamal-proxy` handles `TLS` and `ProxyPass` traffic to `puma` running the `Sinatra` app.
 
 ## Ruby version
 
-Written using 3.1
+Written using 3.3.5
 
 ## CI/CD
 
