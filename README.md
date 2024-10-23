@@ -59,4 +59,4 @@ Written using 3.3.5
 
 Running `GitHub Actions` as defined in `.github/workflows/ruby.yaml`.
 Should add the `rspec` tests, but have not made it run in GitHub.
-It is scanned by `standardrb app.rb` and `erblint views/*`.
+It is scanned by `standardrb app.rb` and `erb_lint views/*`.

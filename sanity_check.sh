@@ -3,4 +3,4 @@
 # gem install standardrb erb_lint
 
 standardrb app.rb
-erblint views/*
+erb_lint views/*
