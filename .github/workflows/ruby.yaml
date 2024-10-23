@@ -33,4 +33,4 @@ jobs:
         run: bin/rubocop -f github
 
       - name: Erblint
-        run: bundle exec erblint views/*
+        run: bundle exec erb_lint views/*
