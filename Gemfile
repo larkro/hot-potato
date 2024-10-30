@@ -7,3 +7,7 @@ gem "openssl"
 gem "sucker_punch"
 gem "puma"
 
+group :development do
+  gem "rubocop"
+  gem "erb_lint"
+end
