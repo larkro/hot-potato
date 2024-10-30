@@ -7,9 +7,7 @@ gem "openssl"
 gem "sucker_punch"
 gem "puma"
 
-group :test do
-  gem "rack-test"
-  gem "rspec"
+group :development do
+  gem "rubocop"
   gem "erb_lint"
-  gem "rexml"
 end
