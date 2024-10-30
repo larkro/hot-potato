@@ -40,6 +40,9 @@ builder:
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 #
+env:
+  secret:
+    - GIT_HASH
 # env:
 #   clear:
 #     DB_HOST: 192.168.0.2
