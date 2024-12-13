@@ -114,6 +114,7 @@ class HotPotato < Sinatra::Base
   helpers Sinatra::Param
 
   configure do
+    set :host_authorization, {permitted_hosts: []}
     set :bind, "0.0.0.0" # Default dev env is localhost only, works bad with containers.
     # set :port, 443 # Uncomment if handling TLS
     set :alg, "AES-256-CBC"
@@ -214,7 +215,7 @@ class HotPotato < Sinatra::Base
     HTML
 
     status 200
-    body html
+    erb html
   end
 
   # If handling TLS, Verify crt / key files and uncomment
