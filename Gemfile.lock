@@ -60,7 +60,7 @@ GEM
     nokogiri (1.17.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    openssl (3.2.0)
+    openssl (3.3.0)
     parallel (1.26.3)
     parser (3.3.6.0)
       ast (~> 2.4.1)
