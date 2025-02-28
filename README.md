@@ -53,7 +53,7 @@ On the `hotpotato.mccc.se` deployment `kamal-proxy` handles `TLS` and `ProxyPass
 
 ## Ruby version
 
-Written using 3.4.1
+Written using 3.4.2
 
 ## CI/CD
 

@@ -1,5 +1,5 @@
 # First stage: build the application
-FROM ruby:3.4.1 AS build-env
+FROM ruby:3.4.2 AS build-env
 
 # Update OS package
 RUN apt-get update -q -y && apt-get upgrade -y \
@@ -21,7 +21,7 @@ COPY app.rb config.ru puma.rb ./
 COPY views ./views
 
 # Second stage: final production image
-FROM ruby:3.4.1-slim
+FROM ruby:3.4.2-slim
 
 ENV APP_HOME=/app
 WORKDIR $APP_HOME
